@@ -1,2 +1,7 @@
 # MLX90640 Thermal Camera
- mxl90640 Thermal Camera using with esp32 Multicore
+ Thermal Camera using MLX90640 with ESP32 , and 2.8" TFT 
+ Code use both cores the ESP for better performance
+ 
+
+ 
+ 
