@@ -1,9 +1,3 @@
-// image for rpi https://m.media-amazon.com/images/I/61lY+JY+TBL._SL1254_.jpg
-// This is the file name used to store the calibration data
-
-// You can change this to create new calibration files.
-// The SPIFFS file name must start with "/".
-
 // https://www.studiopieters.nl/esp32-pinout/   
 // https://raw.githubusercontent.com/AchimPieters/esp32-homekit-camera/master/Images/ESP32-38%20PIN-DEVBOARD.png
 
@@ -12,16 +6,12 @@
 #include <Adafruit_MLX90640.h>
 #include "TFT_eSPI.h"
 #include "FS.h"
-#include <SD.h>  // SD card & FAT filesystem library
-//#include <regex.h>
-
-//#include "BluetoothSerial.h"
-//BluetoothSerial SerialBT;
+#include <SD.h> 
 
 #define ESP32 1
-//#define ILI9341_DRIVER 1
 
-// SPI Pin Definitions
+//Folowing Defined in the tft_espi library --------------------------------------------
+//#define ILI9341_DRIVER 1
 //#define TFT_MISO 12
 //#define TFT_MOSI 13
 //#define TFT_SCLK 14
@@ -29,16 +19,17 @@
 //#define TFT_DC 27    // Data Command control pin
 //#define TFT_RST 26   // Reset pin (could connect to RST pin)
 //#define TOUCH_CS 33  // Reset pin (could connect to RST pin)
+//------------------------------------------------------------------------------------
+
 #define TRIGGER_GPIO 32
 #define LASER_GPIO 16
 #define SDCARD_SS_PIN 5
 
 int fileCount = 0;
 int maxFileIndexNumber = 0;
-//int mlxSelectedI2CID = 0x32;
 int mlxSelectedI2CID = 0x32;
-TFT_eSPI tft = TFT_eSPI();  // Invoke custom library
 
+TFT_eSPI tft = TFT_eSPI();  // Invoke custom library
 Adafruit_MLX90640 mlx;
 
 // uncomment *one* of the below
@@ -146,7 +137,7 @@ File bmpFile;
 // Create 6 keys for the keypad
 #define numberOfButton 7
 
-char keyLabel[numberOfButton][10] = { "Float", "Store", "Wd/Tl", "Max+1", "Max-1", "Min+1", "Min-1"};
+char keyLabel[numberOfButton][10] = { "Float", "Laser", "Wd/Tl", "Max+1", "Max-1", "Min+1", "Min-1"};
 uint16_t keyColor[numberOfButton] = { TFT_RED, TFT_DARKGREY, TFT_DARKGREEN,
                           TFT_BLUE, TFT_BLUE, TFT_BLUE, TFT_BLUE };
 
@@ -155,7 +146,8 @@ TFT_eSPI_Button key[numberOfButton];
 
 uint16_t t_x = 0, t_y = 0;  // To store the touch coordinates
 
-bool pressed;
+bool tftPressed;
+bool saveTriggerPressed;
 
 SemaphoreHandle_t tftSemaphore = NULL;
 SemaphoreHandle_t MLXSemaphore = NULL;
