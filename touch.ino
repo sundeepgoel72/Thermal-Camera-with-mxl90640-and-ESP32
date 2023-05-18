@@ -25,7 +25,7 @@ void processTouch() {
 
   // / Check if any key coordinate boxes contain the touch coordinates
   for (uint8_t b = 0; b < numberOfButton; b++) {
-    if (pressed && key[b].contains(t_x, t_y)) {
+    if (tftPressed && key[b].contains(t_x, t_y)) {
       key[b].press(true);  // tell the button it is pressed
     } else {
       key[b].press(false);  // tell the button it is NOT pressed
@@ -48,7 +48,7 @@ void processTouch() {
       }
 
       if (b == 1) {
-        writeMLXImageToSDCard();
+        digitalWrite(LASER_GPIO, HIGH);
       }
 
       if (b == 2) {
