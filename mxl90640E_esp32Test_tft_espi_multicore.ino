@@ -24,6 +24,7 @@ void setup() {
   pinMode(TRIGGER_GPIO, INPUT_PULLUP);
   pinMode(LASER_GPIO, OUTPUT );
 
+
   Serial.print("exiting setup");
 
 }
