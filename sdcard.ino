@@ -54,8 +54,8 @@ void writeMLXImageToSDCard() {
     // Write image data.
     uint8_t row[rowSize];
     lockTFT();
-    for (int y = 0; y < h; y++) {
-      for (int x = 0; x < w; x++) {
+    for (int y = 0; y < IMAGE_H; y++) {
+      for (int x = 0; x < IMAGE_W; x++) {
         Pixel pix = getPixel(x, y);
         row[3 * x + 0] = pix.b;
         row[3 * x + 1] = pix.g;
@@ -136,7 +136,7 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
 
 Pixel getPixel(int x, int y) {
 
-  float t = frame[(h - y - 1) * 32 + (w - x - 1)];  //rotate 180 degrees
+  float t = frame[(IMAGE_H - y - 1) * 32 + (IMAGE_W - x - 1)];  //rotate 180 degrees
   uint8_t r = (uint8_t)(getColor888(t).r);
   uint8_t g = (uint8_t)(getColor888(t).g);
   uint8_t b = (uint8_t)(getColor888(t).b);
