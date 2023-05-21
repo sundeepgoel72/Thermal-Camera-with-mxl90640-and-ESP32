@@ -22,9 +22,12 @@ void setup() {
   // Initialise all values in the filter frame
   for (int p = 0; p < IMAGE_H * IMAGE_W; p++) filterFrame[p] = 22.0;
 
+  pinMode(TRIGGER_GPIO, INPUT_PULLUP);
+  pinMode(LASER_GPIO, OUTPUT );
+
+
   Serial.print("exiting setup");
-  //SerialBT.begin("ESP32MLX"); //Bluetooth device name
-  //Serial.println(xPortGetCoreID());
+
 }
 
 
@@ -34,16 +37,21 @@ void loop2(void* pvParameters) {
     //tftInit(); // for debugging
     // Pressed will be set true is there is a valid touch on the screen
     lockTFT();
-    pressed = tft.getTouch(&t_x, &t_y);
+    tftPressed = tft.getTouch(&t_x, &t_y);
     unlockTFT();
     //pressed = false;
     // / Check if any key coordinate boxes contain the touch coordinates
-    if (pressed) {
+    if (tftPressed) {
       //Serial.printf("x: %i ", t_x);
       //Serial.printf("y: %i ", t_y);
       processTouch();
     }
-
+    saveTriggerPressed = digitalRead(TRIGGER_GPIO);
+    if (saveTriggerPressed == true)
+    {
+       writeMLXImageToSDCard();
+    }
+    //Serial.printf("save trigger %d", saveTriggerPressed);
     //drawColorScaleBar();
 
     // if (mlx.getFrame(frame) != 0) {
