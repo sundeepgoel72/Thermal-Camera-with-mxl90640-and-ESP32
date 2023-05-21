@@ -1,6 +1,5 @@
 #include "definitions.h"
 
-
 void setup() {
 
   Serial.begin(115200);
@@ -24,7 +23,6 @@ void setup() {
 
   pinMode(TRIGGER_GPIO, INPUT_PULLUP);
   pinMode(LASER_GPIO, OUTPUT );
-
 
   Serial.print("exiting setup");
 
