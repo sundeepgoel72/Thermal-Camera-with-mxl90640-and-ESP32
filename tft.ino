@@ -149,40 +149,79 @@ void paintMLXHeatMap() {
   tft.print("C");
 }
 
-void paintMLXHeatMapInterpolated() {
+void paintMLXHeatMapFiltered() {
 
   for (uint8_t h = 0; h < 24; h++) {
     for (uint8_t w = 0; w < 32; w++) {
-      //float t = frame[h * 32 + w];
+      float t = filterFrame[h * 32 + w];
       //getColour(int(t));
       //tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, tft.color565(R_colour, G_colour, B_colour));
-      //tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, getColor565(t));
-      fillRectInterpolated(w, h);
+      tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, getColor565(t));
     }
   }
+  //Draw center cross
+  tft.drawLine(217 - 15 * 7 + 3.5 - 5, 11 * 7 + 35 + 3.5, 217 - 15 * 7 + 3.5 + 5, 11 * 7 + 35 + 3.5, tft.color565(255, 255, 255));
+  tft.drawLine(217 - 15 * 7 + 3.5, 11 * 7 + 35 + 3.5 - 5, 217 - 15 * 7 + 3.5, 11 * 7 + 35 + 3.5 + 5, tft.color565(255, 255, 255));
+
+  //tft.fillRect(260, 25, 37, 10, tft.color565(255, 0, 0));
+  //tft.fillRect(260, 205, 37, 10, tft.color565(0, 255, 0));
+  //tft.fillRect(115, 220, 37, 10, tft.color565(0, 0, 255));
+
+  tft.setTextSize(1);
+  tft.setTextColor(ILI9341_WHITE, tft.color565(0, 0, 0));
+  tft.setCursor(1, 19);
+  tft.print(T_min, 1);
+  tft.setCursor(30, 19);
+  tft.print("C");  //°
+
+  T_center = frame[11 * 32 + 15];
+  tft.setCursor(95, 19);
+  tft.print(T_center, 1);
+  tft.setCursor(125, 19);
+  tft.print("C");
+
+  tft.setCursor(185, 19);
+  tft.print(T_max, 1);
+  tft.setCursor(215, 19);
+  tft.print("C");
 }
 
-void fillRectInterpolated(int x, int y) {
-  float t = frame[y * 32 + x];
-  float tt[3][3] = { { t, t, t }, { t, t, t }, { t, t, t } };
-  for (uint8_t xx = 0; xx < 3; xx++) {
-    if (x > 0 && x < 32) {
-      tt[xx][0] = (frame[y * 32 + x - 1] + t) / 2;
-      //c1_temp = t;
-      tt[xx][2] = (frame[y * 32 + x + 1] + t) / 2;
-    }
-    for (uint8_t yy = 0; yy < 3; yy++) {
-      if (y > 0 && x < 24) {
-        tt[0][yy] = (frame[(y-1) * 32 + x ] + t) / 2;
-        //c1_temp = t;
-        tt[2][yy] = (frame[(y+1) * 32 + x ] + t) / 2;
-      }
-      tft.fillRect(x * 6 - xx * 2, y * 6 + 35 + yy * 2, 2, 2, getColor565(tt[xx][yy]));
+
+void paintMLXHeatMapInterpolated() {
+  // Draw interpolated image
+  // Rows are 0-46 and columns 0-62 due to interpolation edge limit
+
+  for (uint8_t h = 0; h < 24 *4; h++) {
+    for (uint8_t w = 0; w < 32 * 4; w++) {
+      float t = interpFrame[h + w];
+      //getColour(int(t));
+      //tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, tft.color565(R_colour, G_colour, B_colour));
+      tft.fillRect(w,h, 1, 1, getColor565(t));
     }
   }
+/*
+  for (uint8_t h = 0; h < IMAGE_H; h++) {
+    for (uint8_t w = 0; w < IMAGE_W; w++) {
+
+      float t = interpFrame[h * 24 + w];
+      // Serial.print(t, 1); Serial.print(", ");
+
+      //filterminTemp = min(t, filtermaxTemp);
+      //filtermaxTemp = max(t, filterminTemp);
+      //interpFrame[h * 64 + w] = t;
+
+      uint8_t colorIndex = map(t * 127.0, filterminTemp * 127.0, filtermaxTemp * 127.0, 127, 0);
+
+      // Draw the pixel row in the sprite
+      //spr.fillRect(ipixelSize * w, h, ipixelSize, ipixelSize, rainbow(colorIndex));
+      tft.fillRect(ipixelSize * w, h * ipixelSize, ipixelSize, ipixelSize, rainbow(colorIndex));
+    }
+    // Push the pixel row sprite to the screen
+    //spr.pushSprite(0, (48 - h) * ipixelSize);
+    //spr.pushSprite(0, 0);
+  }
+  */
 }
-
-
 
 void drawColorScaleBar() {
 
@@ -203,11 +242,46 @@ void drawColorScaleBar() {
       tft.print(t, 0);
     }
   }
-
-  //lines on color bar
-
-  //for (i = 0; i < 8; i ++)
-  //{
-  //tft.drawLine(startx, starty - stepy * i, startx + width, starty - stepy * i, tft.color565(255, 255, 255));
-  //}
 }
+
+
+void paintMLXHeatMapInterpolated2() {
+
+  for (uint8_t h = 0; h < 24; h++) {
+    for (uint8_t w = 0; w < 32; w++) {
+      //float t = frame[h * 32 + w];
+      //getColour(int(t));
+      //tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, tft.color565(R_colour, G_colour, B_colour));
+      //tft.fillRect(217 - w * 7, 35 + h * 7, 7, 7, getColor565(t));
+      fillRectInterpolated2(w, h);
+    }
+  }
+}
+
+void fillRectInterpolated2(int x, int y) {
+  float t = frame[y * 32 + x];
+  float tt[3][3] = { { t, t, t }, { t, t, t }, { t, t, t } };
+  for (uint8_t xx = 0; xx < 3; xx++) {
+    if (x > 0 && x < 32) {
+      tt[xx][0] = (frame[y * 32 + x - 1] + t) / 2;
+      //c1_temp = t;
+      tt[xx][2] = (frame[y * 32 + x + 1] + t) / 2;
+    }
+    for (uint8_t yy = 0; yy < 3; yy++) {
+      if (y > 0 && x < 24) {
+        tt[0][yy] = (frame[(y - 1) * 32 + x] + t) / 2;
+        //c1_temp = t;
+        tt[2][yy] = (frame[(y + 1) * 32 + x] + t) / 2;
+      }
+      tft.fillRect(x * 6 - xx * 2, y * 6 + 35 + yy * 2, 2, 2, getColor565(tt[xx][yy]));
+    }
+  }
+}
+
+
+//lines on color bar
+
+//for (i = 0; i < 8; i ++)
+//{
+//tft.drawLine(startx, starty - stepy * i, startx + width, starty - stepy * i, tft.color565(255, 255, 255));
+//}

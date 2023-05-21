@@ -18,6 +18,10 @@ void setup() {
     NULL,     // Task handle.
     0         // Core where the task should run
   );
+
+  // Initialise all values in the filter frame
+  for (int p = 0; p < IMAGE_H * IMAGE_W; p++) filterFrame[p] = 22.0;
+
   Serial.print("exiting setup");
   //SerialBT.begin("ESP32MLX"); //Bluetooth device name
   //Serial.println(xPortGetCoreID());
@@ -62,6 +66,7 @@ void loop2(void* pvParameters) {
 
 // the loop2 function also runs forver but as a parallel task
 void loop() {
+  //uint32_t timestamp = millis();
   lockMLX();
   int mlxReturnCode = mlx.getFrame(frame);
   unlockMLX();
@@ -70,15 +75,22 @@ void loop() {
     return;
   } else {
     if (temperatureMode == 1) {
+      fixBadPixels(frame);
       setTempScale();
+      exponentialFilter(frame, filterFrame);
+      interpolateImage(filterFrame, interpFrame);      
     }
     T_min = minTemp;
     T_max = maxTemp;
     //printMLXRawOutput();
     lockTFT();
-    paintMLXHeatMap();
-    //paintMLXHeatMapInterpolated();
     drawColorScaleBar();
+   // paintMLXHeatMap();
+    //delay(1000);
+    paintMLXHeatMapFiltered();
+    //delay(1000);
+    //paintMLXHeatMapInterpolated();
+    //delay(1000);
     unlockTFT();
   }
   //Serial.println(xPortGetCoreID());

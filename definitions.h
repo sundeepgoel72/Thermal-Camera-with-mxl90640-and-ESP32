@@ -38,6 +38,7 @@ int maxFileIndexNumber = 0;
 //int mlxSelectedI2CID = 0x32;
 int mlxSelectedI2CID = 0x32;
 TFT_eSPI tft = TFT_eSPI();  // Invoke custom library
+TFT_eSprite spr = TFT_eSprite(&tft);
 
 Adafruit_MLX90640 mlx;
 
@@ -54,6 +55,10 @@ float T_center = 30.0;                    // Temperatur in der Bildschirmmitte
 // start with some initial colors
 float minTemp = 20.0;
 float maxTemp = 40.0;
+float filterminTemp = 0.0;
+float filtermaxTemp = 0.0;
+uint16_t ipixelSize = 5;
+uint16_t pixelSize = 4;
 
 int temperatureMode = 1; //1 = float, 2 = fixed
 
@@ -77,14 +82,16 @@ struct Pixel {
 };
 
 // BMP related ----------------------------------------------------------------
-const int w = 32;  // image width in pixels
-const int h = 24;  // " height
-float frame[w * h];  // buffer for full frame of temperatures
+const int IMAGE_W = 32;  // image width in pixels
+const int IMAGE_H = 24;  // " height
+float frame[IMAGE_W * IMAGE_H];  // buffer for full frame of temperatures
+float filterFrame[IMAGE_W * IMAGE_H]; // Filtered thermal image buffer
+float interpFrame[IMAGE_W * IMAGE_H * 4];  // Interpolated thermal image buffer
 
 
 // set fileSize (used in bmp header)
-int rowSize = 4 * ((3 * w + 3) / 4);  // how many bytes in the row (used to create padding)
-int fileSize = 54 + h * rowSize;      // headers (54 bytes) + pixel data
+int rowSize = 4 * ((3 * IMAGE_W + 3) / 4);  // how many bytes in the row (used to create padding)
+int fileSize = 54 + IMAGE_H * rowSize;      // headers (54 bytes) + pixel data
 
 //https://en.wikipedia.org/wiki/BMP_file_format
 uint8_t header[54] = {
@@ -98,14 +105,14 @@ uint8_t header[54] = {
 
   // Image info header.
   40, 0, 0, 0,
-  (uint8_t)(w >> 0),
-  (uint8_t)(w >> 8),
-  (uint8_t)(w >> 16),
-  (uint8_t)(w >> 24),
-  (uint8_t)(h >> 0),
-  (uint8_t)(h >> 8),
-  (uint8_t)(h >> 16),
-  (uint8_t)(h >> 24),
+  (uint8_t)(IMAGE_W >> 0),
+  (uint8_t)(IMAGE_W>> 8),
+  (uint8_t)(IMAGE_W >> 16),
+  (uint8_t)(IMAGE_W >> 24),
+  (uint8_t)(IMAGE_H >> 0),
+  (uint8_t)(IMAGE_H >> 8),
+  (uint8_t)(IMAGE_H >> 16),
+  (uint8_t)(IMAGE_H >> 24),
   1, 0, 24, 0
 };
 
