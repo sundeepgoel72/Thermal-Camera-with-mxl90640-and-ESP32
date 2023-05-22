@@ -1,7 +1,7 @@
 <meta name="author" content="Sundeep Goel">
 <meta name="description" content="Thermal Camera with mxl90640 and ESP32">
 <meta name="keywords" content="MLX90640, ESP32, Thermal Camera, FLIR">
-<meta name="google-site-verification" content="WHorpyKPL7XUa416tb-LJA24v3BJMLTEdVNlcb2EwkU" />
+<meta name="google-site-verification" content="WHorpyKPL7XUa416tb-LJA24v3BJMLTEdVNlcb2EwkU">
 
 # MLX90640 Thermal Camera
 Thermal Camera using MLX90640 with ESP32 , and 2.8" TFT 
