@@ -35,6 +35,7 @@ Steps to use / build
    #define TOUCH_CS 33     // Chip select pin (T_CS) of touch screen
    #define LOAD_GFXFF  // FreeFonts. Include access to the 48 Adafruit_GFX free fonts FF1 to FF48 and custom fonts
    #define SMOOTH_FONT
+   
    #define SPI_FREQUENCY  20000000
    #define SPI_TOUCH_FREQUENCY  2500000
    #define USE_HSPI_PORT   // This is very important, without this writing to SD card witll cause sketch to hang!!!
